@@ -1,0 +1,131 @@
+<!--
+ Copyright 2016 Google Inc.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="canonical" href="https://weather-pwa-sample.firebaseapp.com/final/">
+
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="styles/materialize.min.css" media="screen,projection" />
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather PWA</title>
+  <link rel="stylesheet" type="text/css" href="styles/inline.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="
+    crossorigin="" />
+
+
+
+  <!-- TODO add manifest here -->
+  <link rel="manifest" href="/manifest.json">
+  <!-- Add to home screen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Weather PWA">
+  <link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
+  <meta name="msapplication-TileImage" content="images/icons/icon-144x144.png">
+  <meta name="msapplication-TileColor" content="#2F3BA2">
+</head>
+
+<body>
+
+  <header class="header">
+    <h1 class="header__title">Weather PWA</h1>
+    <button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
+    <button id="butAdd" class="headerButton" aria-label="Add"></button>
+  </header>
+
+  <main class="main">
+    <div class="row">
+      <div class="col s12">
+        <div id="mapid"></div>
+      </div>
+
+    </div>
+
+  </main>
+  <!-- 
+  <div class="loader">
+    <svg viewBox="0 0 32 32" width="32" height="32">
+      <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+    </svg>
+  </div> -->
+
+  <!-- Uncomment the line below when ready to test with fake data -->
+  <script src="scripts/app.js" async></script>
+
+  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="
+    crossorigin=""></script>
+
+  <!--Import jQuery before materialize.js-->
+  <script type="text/javascript" src="scripts/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="scripts/materialize.min.js"></script>
+  <script>
+    $(function () {
+      var self = {};
+
+      self.onLocationFound = function (e) {
+        let self = this;
+        var radius = e.accuracy / 2;
+        console.log("Mymap", self.mymap)
+        L.marker(e.latlng, { icon: self.me }).addTo(self.mymap);
+        //self.L.circle(e.latlng, radius).addTo(self.mymap);
+      }
+
+
+      self.onLocationeError = function (e) {
+        console.log("DB: Location Error")
+      }
+
+      self.mymap = L.map('mapid').setView([51.505, -0.09], 13);
+      self.me = L.icon({
+        iconUrl: './assets/characters/cspdr.png',
+        iconSize: [38, 50], // size of the icon
+        //shadowSize: [50, 64], // size of the shadow
+        iconAnchor: [19, 25], // point of the icon which will correspond to marker's location
+        //shadowAnchor: [4, 62],  // the same for the shadow
+        //popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+      });
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.streets'
+      }).addTo(self.mymap);
+      console.log("oninit", self);
+      self.mymap.locate({ setView: true });
+      self.mymap.on('locationfound', self.onLocationFound.bind(self), true);
+      self.mymap.on('locationerror', self.onLocationFound.bind(self), true);
+    });
+  </script>
+
+<style>
+    #mapid { height: 500px; }
+  </style>
+
+</body>
+
+</html>
